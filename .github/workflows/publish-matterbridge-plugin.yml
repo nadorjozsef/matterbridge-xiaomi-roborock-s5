@@ -1,0 +1,49 @@
+name: Publish to npm
+
+on:
+  release:
+    types: [created]
+
+permissions:
+  id-token: write # Required for OIDC
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: '24.x'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Clean cache
+        run: npm cache clean --force
+
+      - name: Verify Node.js version
+        run: node -v
+
+      - name: Verify Npm version
+        run: npm -v
+
+      - name: Install matterbridge globally
+        run: npm install -g matterbridge@latest
+
+      - name: Install plugin dependencies
+        run: npm ci
+
+      - name: Link matterbridge in the project
+        run: npm link matterbridge
+
+      - name: Lint the plugin
+        run: npm run lint
+
+      - name: Build the plugin
+        run: npm run build
+
+      - name: Publish the plugin to npm
+        run: npm publish
