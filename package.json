@@ -1,6 +1,6 @@
 {
   "name": "matterbridge-xiaomi-roborock-s5",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Matterbridge Xiaomi Roborock S5 Plugin",
   "author": "https://github.com/nadorjozsef",
   "homepage": "https://global.roborock.com/",
@@ -82,7 +82,7 @@
     "matterbridge:list": "matterbridge -list"
   },
   "dependencies": {
-    "node-miio": "^0.3.0-beta.1"
+    "node-miio": "^0.3.0-beta.2"
   },
   "devDependencies": {
     "@eslint/js": "9.39.4",

@@ -39,10 +39,10 @@ const S5_MODEL = 'roborock.vacuum.s5';
 const S5_MIN_FIRMWARE = [3, 5, 8] as const;
 const S5_GEN4_SPEEDS: VacuumSpeedLevel[] = [
   { miLevel: -1, name: 'Off', label: RvcCleanMode.ModeTag.Vacuum },
-  { miLevel: 105, name: 'Soft', label: RvcCleanMode.ModeTag.LowEnergy },
-  { miLevel: 101, name: 'Quiet', label: RvcCleanMode.ModeTag.LowNoise },
-  { miLevel: 102, name: 'Balanced', label: RvcCleanMode.ModeTag.Min },
-  { miLevel: 103, name: 'Turbo', label: RvcCleanMode.ModeTag.Day },
+  { miLevel: 105, name: 'Gentle', label: RvcCleanMode.ModeTag.Min },
+  { miLevel: 101, name: 'Silent', label: RvcCleanMode.ModeTag.LowNoise },
+  { miLevel: 102, name: 'Balanced', label: RvcCleanMode.ModeTag.Auto },
+  { miLevel: 103, name: 'Turbo', label: RvcCleanMode.ModeTag.DeepClean },
   { miLevel: 104, name: 'Max', label: RvcCleanMode.ModeTag.Max },
 ];
 const MODE_IDLE = 1;
