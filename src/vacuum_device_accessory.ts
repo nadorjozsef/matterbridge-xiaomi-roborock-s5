@@ -37,7 +37,7 @@ const SUPPORTED_OPERATIONAL_STATES: RvcOperationalState.OperationalStateStruct[]
 
 const S5_MODEL = 'roborock.vacuum.s5';
 const S5_MIN_FIRMWARE = [3, 5, 8] as const;
-const S5_GEN4_SPEEDS: VacuumSpeedLevel[] = [
+const S5_FAN_SPEEDS: VacuumSpeedLevel[] = [
   { miLevel: -1, name: 'Off', label: RvcCleanMode.ModeTag.Vacuum },
   { miLevel: 105, name: 'Gentle', label: RvcCleanMode.ModeTag.Min },
   { miLevel: 101, name: 'Silent', label: RvcCleanMode.ModeTag.LowNoise },
@@ -152,7 +152,6 @@ export class VacuumDeviceAccessory {
         return;
       }
       if (data.request.newMode === MODE_CLEANING) {
-        await this.updateFanSpeed();
         await this.activateCleaning('start');
         return;
       }
@@ -179,14 +178,8 @@ export class VacuumDeviceAccessory {
     return this.endpoint;
   }
 
-  private async updateFanSpeed() {
-    const currentFanSpeed = this.deviceManager.property<number>('fanSpeed');
-    if (typeof currentFanSpeed === 'number') {
-      await this.deviceManager.device.changeFanSpeed(currentFanSpeed);
-    }
-  }
-
   private async activateCleaning(mode: 'start' | 'resume') {
+    const fanSpeedBeforeStart = mode === 'start' ? this.deviceManager.property<number>('fanSpeed') : undefined;
     const selectedAreas = this.getSelectedAreas();
     if (selectedAreas.length === 0) {
       this.log.info(`${mode === 'start' ? 'Initiating' : 'Resuming'} full cleaning...`);
@@ -194,6 +187,11 @@ export class VacuumDeviceAccessory {
     } else {
       this.log.info(`${mode === 'start' ? 'Initiating' : 'Resuming'} room cleaning...`);
       await this.deviceManager.device.cleanRooms(selectedAreas);
+    }
+
+    if (mode === 'start' && typeof fanSpeedBeforeStart === 'number') {
+      await this.deviceManager.device.changeFanSpeed(fanSpeedBeforeStart);
+      this.log.debug(`Restored fan speed after start: ${fanSpeedBeforeStart}.`);
     }
   }
 
@@ -396,7 +394,7 @@ export class VacuumDeviceAccessory {
   }
 
   private get supportedCleanModes(): Array<SupportedCleanMode> {
-    const [, ...vacuumSpeedModes] = S5_GEN4_SPEEDS;
+    const [, ...vacuumSpeedModes] = S5_FAN_SPEEDS;
 
     let mode = 1;
 
