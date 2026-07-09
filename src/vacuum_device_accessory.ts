@@ -152,6 +152,7 @@ export class VacuumDeviceAccessory {
         return;
       }
       if (data.request.newMode === MODE_CLEANING) {
+        await this.updateFanSpeed();
         await this.activateCleaning('start');
         return;
       }
@@ -176,6 +177,13 @@ export class VacuumDeviceAccessory {
       this.log.debug(`Select areas command received: ${data.request.newAreas}`);
     });
     return this.endpoint;
+  }
+
+  private async updateFanSpeed() {
+    const currentFanSpeed = this.deviceManager.property<number>('fanSpeed');
+    if (typeof currentFanSpeed === 'number') {
+      await this.deviceManager.device.changeFanSpeed(currentFanSpeed);
+    }
   }
 
   private async activateCleaning(mode: 'start' | 'resume') {
