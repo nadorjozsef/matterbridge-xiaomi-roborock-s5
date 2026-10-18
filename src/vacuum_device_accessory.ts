@@ -45,6 +45,7 @@ const S5_FAN_SPEEDS: VacuumSpeedLevel[] = [
   { miLevel: 103, name: 'Turbo', label: RvcCleanMode.ModeTag.DeepClean },
   { miLevel: 104, name: 'Max', label: RvcCleanMode.ModeTag.Max },
 ];
+const BALANCED_FAN_SPEED = 102;
 const MODE_IDLE = 1;
 const MODE_CLEANING = 2;
 
@@ -179,7 +180,6 @@ export class VacuumDeviceAccessory {
   }
 
   private async activateCleaning(mode: 'start' | 'resume') {
-    const fanSpeedBeforeStart = mode === 'start' ? this.deviceManager.property<number>('fanSpeed') : undefined;
     const selectedAreas = this.getSelectedAreas();
     if (selectedAreas.length === 0) {
       this.log.info(`${mode === 'start' ? 'Initiating' : 'Resuming'} full cleaning...`);
@@ -189,9 +189,10 @@ export class VacuumDeviceAccessory {
       await this.deviceManager.device.cleanRooms(selectedAreas);
     }
 
-    if (mode === 'start' && typeof fanSpeedBeforeStart === 'number') {
-      await this.deviceManager.device.changeFanSpeed(fanSpeedBeforeStart);
-      this.log.debug(`Restored fan speed after start: ${fanSpeedBeforeStart}.`);
+    if (mode === 'start') {
+      // Set after starting, since the device may reset fan speed when a clean begins.
+      await this.deviceManager.device.changeFanSpeed(BALANCED_FAN_SPEED);
+      this.log.debug(`Set fan speed to Balanced (${BALANCED_FAN_SPEED}) after start.`);
     }
   }
 
